@@ -1,0 +1,15 @@
+#
+# Cloudresty .gitignore
+#
+
+### Visual Studio Code ###
+.vscode/*
+
+# Local History for Visual Studio Code
+.history/
+
+### Local Environment Files ###
+*.env
+
+### Terraform Variables ###
+*.tfvars
