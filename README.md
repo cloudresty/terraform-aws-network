@@ -13,6 +13,10 @@ Terraform AWS Network Module has been designed for creating and managing a speci
 - 3 x Elastic IPs for NAT Gateways
 - 3 x NAT Gateways for Private Subnets
 - 4 x Route Tables, one for Public Subnets and three for Private Subnets
+- 1 x Transit Gateway (optional)
+- 1 x Transit Gateway VPC Attachment (optional)
+- 1 x VPN Customer Gateway (optional)
+- 1 x VPN Connection Transit Gateway (optional)
 
 Optionally you can set a `project_id` variable for your project, variable that the module can use in order to suffix all resource names that will be provisioned or managed. For example if a `var.project_id="d3rt19"` variable is provided then all the resources will be suffixed like for example `vpc-eu-east-1-d3rt19`, `internet-gateway-eu-east-1-d3rt19` etc..
 
@@ -24,7 +28,7 @@ Example using the default values:
 module "aws-network" {
 
     source      = "git::github.com/cloudresty/terraform-aws-network.git?ref=v1.0.0"
-  
+
 }
 ```
 Example using custom values:
@@ -36,7 +40,7 @@ module "aws-network" {
 
     vpc_region              = "us-west-2"
     vpc_availability_zones  = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  
+
 }
 ```
 
@@ -197,6 +201,7 @@ One NACL will be provisioned and configured for the Private Subnets.
 | `vpc_private_subnet_nacl_ingress_from_port`   | `number`  | `0`                       |
 | `vpc_private_subnet_nacl_ingress_to_port`     | `number`  | `0`                       |
 | `vpc_private_subnet_nacl_ingress_protocol`    | `string`  | `-1`                      |
+| `vpc_private_subnet_nacl_tags`                | `map`     | `-`
 
 </details>
 
@@ -292,10 +297,222 @@ The Private route tables will be provisioned based on the number of Private Subn
 
 <details>
     <summary>Route Table Outputs</summary>
- 
+
 - `vpc_public_route_table_id`
 - `vpc_public_route_table_arn`
 - `vpc_private_route_table_id`
 - `vpc_private_route_table_arn`
+
+</details>
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Transit Gateway
+Transit Gateway has been introduced since `v1.1.0` and it's an optional feature.
+
+
+<details>
+    <summary>Transit Gateway Input Variables</summary>
+
+| Variable Name                         | Type      | Default Value         |
+| -----------------------------         | --------- | -----------------     |
+| `vpc_transit_gateway_enabled`         | `bool`    | `false`               |
+| `vpc_transit_gateway_name`            | `string`  | `transit-gateway`     |
+| `vpc_transit_gateway_description`     | `string`  | `External Connection` |
+| `vpc_transit_gateway_tags`            | `map`     | `-`                   |
+
+</details>
+
+<details>
+    <summary>Transit Gateway Outputs</summary>
+
+- `vpc_transit_gateway_id`
+- `vpc_transit_gateway_arn`
+
+</details>
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Transit Gateway VPC Attachment
+Transit Gateway VPC Attachment has been introduced since `v1.1.0` and it's an optional feature.
+
+
+<details>
+    <summary>Transit Gateway VPC Attachment Input Variables</summary>
+
+| Variable Name                                     | Type      | Default Value         |
+| -----------------------------                     | --------- | -----------------     |
+| `vpc_transit_gateway_vpc_attachment_enabled`      | `bool`    | `false`               |
+| `vpc_transit_gateway_vpc_attachment_name`         | `string`  | `tgw-attachment`      |
+| `vpc_transit_gateway_vpc_attachment_vpc_id`       | `string`  | `-`                   |
+| `vpc_transit_gateway_vpc_attachment_subnet_ids`   | `list`    | `-`                   |
+| `vpc_transit_gateway_vpc_attachment_tags`         | `map`     | `-`                   |
+
+</details>
+
+<details>
+    <summary>Transit Gateway VPC Attachment Outputs</summary>
+
+- `vpc_transit_gateway_vpc_attachment_id`
+
+</details>
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## VPN Customer Gateway
+VPC Customer Gateway has been introduced since `v1.1.0` and it's an optional feature.
+
+
+<details>
+    <summary>VPN Customer Gateway Input Variables</summary>
+
+| Variable Name                                     | Type      | Default Value         |
+| -----------------------------                     | --------- | -----------------     |
+| `vpc_vpn_customer_gateway_enabled`                | `bool`    | `false`               |
+| `vpc_vpn_customer_gateway_name`                   | `string`  | `customer-gateway`    |
+| `vpc_vpn_customer_gateway_bgp_asn`                | `number`  | `65000`               |
+| `vpc_vpn_customer_gateway_ip_address`             | `string`  | `-`                   |
+| `vpc_vpn_customer_gateway_type`                   | `string`  | `ipsec.1`             |
+| `vpc_vpn_customer_gateway_tags`                   | `map`     | `-`                   |
+
+
+</details>
+
+<details>
+    <summary>VPN Customer Gateway Outputs</summary>
+
+- `vpc_vpn_customer_gateway_id`
+- `vpc_vpn_customer_gateway_arn`
+
+</details>
+
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## VPN Connection Transit Gateway
+...
+
+
+<details>
+    <summary>VPN Connection Transit Gateway Input Variables</summary>
+
+| Variable Name                                                             | Type      | Default Value         |
+| -----------------------------                                             | --------- | -----------------     |
+| `vpc_vpn_connection_transit_gateway_enabled`                              | `bool`    | `false`               |
+| `vpc_vpn_connection_transit_gateway_name`                                 | `string`  | `external-s2s`        |
+| `vpc_vpn_connection_transit_gateway_tgw_id`                               | `string`  | `-`                   |
+| `vpc_vpn_connection_transit_gateway_tags`                                 | `map`     | `-`                   |
+| `vpc_vpn_connection_transit_gateway_tunnel1_ike_versions`                 | `list`    | `ikev1`               |
+|                                                                           |           | `ikev2`               |
+| `vpc_vpn_connection_transit_gateway_tunnel1_inside_cidr`                  | `string`  | `-`                   |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase1_dh_group_numbers`      | `list`    | `2`                   |
+|                                                                           |           | `14`                  |
+|                                                                           |           | `15`                  |
+|                                                                           |           | `16`                  |
+|                                                                           |           | `17`                  |
+|                                                                           |           | `18`                  |
+|                                                                           |           | `19`                  |
+|                                                                           |           | `20`                  |
+|                                                                           |           | `21`                  |
+|                                                                           |           | `22`                  |
+|                                                                           |           | `23`                  |
+|                                                                           |           | `24`                  |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase1_encryption_algorithms` | `list`    | `AES128`              |
+|                                                                           |           | `AES128-GCM-16`       |
+|                                                                           |           | `AES256`              |
+|                                                                           |           | `AES256-GCM-16`       |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase1_integrity_algorithms`  | `list`    | `SHA1`                |
+|                                                                           |           | `SHA2-256`            |
+|                                                                           |           | `SHA2-384`            |
+|                                                                           |           | `SHA2-512`            |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase2_dh_group_numbers`      | `list`    | `2`                   |
+|                                                                           |           | `5`                   |
+|                                                                           |           | `14`                  |
+|                                                                           |           | `15`                  |
+|                                                                           |           | `16`                  |
+|                                                                           |           | `17`                  |
+|                                                                           |           | `18`                  |
+|                                                                           |           | `19`                  |
+|                                                                           |           | `20`                  |
+|                                                                           |           | `21`                  |
+|                                                                           |           | `22`                  |
+|                                                                           |           | `23`                  |
+|                                                                           |           | `24`                  |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase2_encryption_algorithms` | `list`    | `AES128`              |
+|                                                                           |           | `AES128-GCM-16`       |
+|                                                                           |           | `AES256`              |
+|                                                                           |           | `AES256-GCM-16`       |
+| `vpc_vpn_connection_transit_gateway_tunnel1_phase2_integrity_algorithms`  | `list`    | `SHA1`                |
+|                                                                           |           | `SHA2-256`            |
+|                                                                           |           | `SHA2-384`            |
+|                                                                           |           | `SHA2-512`            |
+| `vpc_vpn_connection_transit_gateway_tunnel1_startup_action`               | `string`  | `add`                 |
+| `vpc_vpn_connection_transit_gateway_tunnel2_inside_cidr`                  | `string`  | `-`                   |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase1_dh_group_numbers`      | `list`    | `2`                   |
+|                                                                           |           | `14`                  |
+|                                                                           |           | `15`                  |
+|                                                                           |           | `16`                  |
+|                                                                           |           | `17`                  |
+|                                                                           |           | `18`                  |
+|                                                                           |           | `19`                  |
+|                                                                           |           | `20`                  |
+|                                                                           |           | `21`                  |
+|                                                                           |           | `22`                  |
+|                                                                           |           | `23`                  |
+|                                                                           |           | `24`                  |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase1_encryption_algorithms` | `list`    | `AES128`              |
+|                                                                           |           | `AES128-GCM-16`       |
+|                                                                           |           | `AES256`              |
+|                                                                           |           | `AES256-GCM-16`       |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase1_integrity_algorithms`  | `list`    | `SHA1`                |
+|                                                                           |           | `SHA2-256`            |
+|                                                                           |           | `SHA2-384`            |
+|                                                                           |           | `SHA2-512`            |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase2_dh_group_numbers`      | `list`    | `2`                   |
+|                                                                           |           | `5`                   |
+|                                                                           |           | `14`                  |
+|                                                                           |           | `15`                  |
+|                                                                           |           | `16`                  |
+|                                                                           |           | `17`                  |
+|                                                                           |           | `18`                  |
+|                                                                           |           | `19`                  |
+|                                                                           |           | `20`                  |
+|                                                                           |           | `21`                  |
+|                                                                           |           | `22`                  |
+|                                                                           |           | `23`                  |
+|                                                                           |           | `24`                  |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase2_encryption_algorithms` | `list`    | `AES128`              |
+|                                                                           |           | `AES128-GCM-16`       |
+|                                                                           |           | `AES256`              |
+|                                                                           |           | `AES256-GCM-16`       |
+| `vpc_vpn_connection_transit_gateway_tunnel2_phase2_integrity_algorithms`  | `list`    | `SHA1`                |
+|                                                                           |           | `SHA2-256`            |
+|                                                                           |           | `SHA2-384`            |
+|                                                                           |           | `SHA2-512`            |
+| `vpc_vpn_connection_transit_gateway_tunnel2_startup_action`               | `string`  | `add`                 |
+
+</details>
+
+<details>
+    <summary>VPN Connection Transit Gateway Outputs</summary>
+
+- `vpc_vpn_connection_transit_gateway_id`
+- `vpc_vpn_connection_transit_gateway_arn`
 
 </details>

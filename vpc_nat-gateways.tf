@@ -12,7 +12,7 @@ resource "aws_nat_gateway" "default" {
 
     count           = length(var.vpc_private_subnets)
     allocation_id   = element(local.eip_allocation, count.index)
-    subnet_id       = element(aws_subnet.private_subnet.*.id, count.index)
+    subnet_id       = element(aws_subnet.public_subnet.*.id, count.index)
 
     tags = merge(var.vpc_nat_gateway_tags,
 

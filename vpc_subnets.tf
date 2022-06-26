@@ -6,10 +6,11 @@
 
 resource "aws_subnet" "public_subnet" {
 
-    count               = length(var.vpc_public_subnets)
-    vpc_id              = aws_vpc.default.id
-    cidr_block          = element(var.vpc_public_subnets,count.index)
-    availability_zone   = element(var.vpc_availability_zones,count.index)
+    count                   = length(var.vpc_public_subnets)
+    vpc_id                  = aws_vpc.default.id
+    cidr_block              = element(var.vpc_public_subnets,count.index)
+    availability_zone       = element(var.vpc_availability_zones,count.index)
+    map_public_ip_on_launch = true
     
     tags = merge(var.vpc_public_subnet_tags,{
 
@@ -23,10 +24,11 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnet" {
 
-    count               = length(var.vpc_private_subnets)
-    vpc_id              = aws_vpc.default.id
-    cidr_block          = element(var.vpc_private_subnets,count.index)
-    availability_zone   = element(var.vpc_availability_zones,count.index)
+    count                   = length(var.vpc_private_subnets)
+    vpc_id                  = aws_vpc.default.id
+    cidr_block              = element(var.vpc_private_subnets,count.index)
+    availability_zone       = element(var.vpc_availability_zones,count.index)
+    map_public_ip_on_launch = false
     
     tags = merge(var.vpc_private_subnet_tags,{
 

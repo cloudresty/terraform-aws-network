@@ -29,7 +29,7 @@ resource "aws_network_acl" "private_subnet" {
 
     }
 
-    tags = merge(var.vpc_tags,
+    tags = merge(var.vpc_private_subnet_nacl_tags,
 
         {
 
